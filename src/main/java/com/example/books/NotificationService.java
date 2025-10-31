@@ -87,7 +87,7 @@ public class NotificationService {
                                                 SQLDataType.LOCALDATETIME,
                                                 val(limitSeconds),
                                                 NOTIFICATION.LOCKED_AT
-                                        ).lt(currentTimestamp().cast(SQLDataType.LOCALDATETIME))
+                                        ).lt(DSL.currentLocalDateTime()) // FIX APPLIED HERE
                                 )
                 )
 // <--- đóng ngoặc where ở đây
