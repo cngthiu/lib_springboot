@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Borrow Service</title>
+</head>
+<body>
+<h1>Borrow Service UI</h1>
+<div id="content"></div>
+<script>
+    // Load mượn từ API
+    fetch('/api/borrow-service')
+      .then(res => res.json())
+      .then(data => {
+          const div = document.getElementById('content');
+          div.innerHTML = '<ul>' + data.map(d => '<li>ID: ' + d.id + ', User: ' + (d.user || '') + '</li>').join('') + '</ul>';
+      });
+</script>
+</body>
+</html>
