@@ -1,7 +1,7 @@
 # Books CRUD - Spring Boot + jOOQ + MS SQL Server
 
 ## Prereqs
-- Java 17+, Maven
+- Java 21+, Maven
 - SQL Server running (`localhost:1433`, DB `booksdb`). Update credentials in `application.properties` if needed.
 
 ## Generate jOOQ code from DDL (no live DB needed)
