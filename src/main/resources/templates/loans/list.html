@@ -1,164 +1,277 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Library Dashboard</title>
-    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link
+      rel="stylesheet"
+      href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css"
+    />
     <style>
-        body { min-height: 100vh; }
-        .status-BORROWED { background-color: #0d6efd; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.85rem; }
-        .status-OVERDUE { background-color: #dc3545; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.85rem; }
-        .status-RETURNED { background-color: #198754; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.85rem; }
-        .sidebar { min-width: 200px; max-width: 200px; background-color: #f8f9fa; }
-        .sidebar .nav-link.active { font-weight: bold; color: #0d6efd; }
-        .table-hover tbody tr:hover { background-color: #f1f3f5; }
+      body {
+        min-height: 100vh;
+      }
+      .status-BORROWED {
+        background-color: #0d6efd;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+      }
+      .status-OVERDUE {
+        background-color: #dc3545;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+      }
+      .status-RETURNED {
+        background-color: #198754;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+      }
+      .sidebar {
+        min-width: 200px;
+        max-width: 200px;
+        background-color: #f8f9fa;
+      }
+      .sidebar .nav-link.active {
+        font-weight: bold;
+        color: #0d6efd;
+      }
+      .table-hover tbody tr:hover {
+        background-color: #f1f3f5;
+      }
     </style>
-</head>
-<body class="bg-light">
-
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
+  </head>
+  <body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container-fluid">
         <a class="navbar-brand" href="#">Library Dashboard</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="/books">Books</a></li>
-                <li class="nav-item"><a class="nav-link active" href="/loans">Loans</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Members</a></li>
-            </ul>
+        <div
+          class="collapse navbar-collapse justify-content-end"
+          id="navbarNav"
+        >
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="/books">Books</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/loans">Loans</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/members">Members</a>
+            </li>
+          </ul>
         </div>
-    </div>
-</nav>
+      </div>
+    </nav>
 
-<div class="container-fluid">
-    <div class="row">
-
+    <div class="container-fluid">
+      <div class="row">
         <!-- Sidebar -->
         <div class="col-md-2 d-none d-md-block sidebar p-3">
-            <h6 class="text-muted">Menu</h6>
-            <ul class="nav flex-column">
-                <li class="nav-item"><a class="nav-link active" href="/loans">Loans</a></li>
-                <li class="nav-item"><a class="nav-link" href="/books">Books</a></li>
-                <li class="nav-item"><a class="nav-link" href="/members">Members</a></li>
-                <li class="nav-item"><a class="nav-link" href="/notifications">Notifications</a></li>
-            </ul>
+          <h6 class="text-muted">Menu</h6>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" href="/loans">Loans</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/books">Books</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/members">Members</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/notifications">Notifications</a>
+            </li>
+          </ul>
         </div>
 
         <!-- Main Content -->
         <div class="col-md-10 ms-sm-auto px-4 py-4">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Loans</h2>
+            <a class="btn btn-outline-secondary" href="/books">Books List</a>
+          </div>
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Loans</h2>
-                <a class="btn btn-outline-secondary" href="/books">Books List</a>
+          <!-- Filter -->
+          <form class="row g-3 mb-4" method="get" action="/loans">
+            <div class="col-md-6">
+              <input
+                class="form-control"
+                type="search"
+                name="q"
+                placeholder="Search by Book/Member"
+                th:value="${q}"
+              />
             </div>
+            <div class="col-md-3">
+              <select class="form-select" name="status" th:value="${status}">
+                <option value="">All status</option>
+                <option value="BORROWED">BORROWED</option>
+                <option value="OVERDUE">OVERDUE</option>
+                <option value="RETURNED">RETURNED</option>
+              </select>
+            </div>
+            <div class="col-md-3 d-grid">
+              <button class="btn btn-primary">Filter</button>
+            </div>
+          </form>
 
-            <!-- Filter -->
-            <form class="row g-3 mb-4" method="get" action="/loans">
-                <div class="col-md-6">
-                    <input class="form-control" type="search" name="q" placeholder="Search by Book/Member" th:value="${q}">
+          <!-- Loans Table -->
+          <div class="card shadow-sm mb-4">
+            <div class="card-body p-0">
+              <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>Book</th>
+                    <th>Member</th>
+                    <th>Borrowed</th>
+                    <th>Due</th>
+                    <th>Returned</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="l : ${loans}">
+                    <td th:text="${l.id}">1</td>
+                    <td th:text="${l.bookTitle}">Clean Code</td>
+                    <td>
+                      <span th:text="${l.memberCode}">M001</span> -
+                      <span th:text="${l.memberName}">Nguyen Hung</span>
+                    </td>
+                    <td th:text="${l.borrowedAt}">2025-01-01</td>
+                    <td th:text="${l.dueAt}">2025-01-08</td>
+                    <td th:text="${l.returnedAt != null ? l.returnedAt : '-'}">
+                      -
+                    </td>
+                    <td>
+                      <span
+                        th:text="${l.status}"
+                        th:class="'status-' + ${l.status}"
+                        class="d-inline-block mb-1"
+                      ></span>
+                      <br th:if="${l.returnedAt == null}" />
+                      <form
+                        th:if="${l.returnedAt == null}"
+                        th:action="@{|/api/loans/${l.id}/return|}"
+                        method="post"
+                        class="d-inline"
+                      >
+                        <button class="btn btn-sm btn-outline-success mt-1">
+                          Return
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                  <tr th:if="${#lists.isEmpty(loans)}">
+                    <td colspan="7" class="text-center text-muted py-3">
+                      No loans found
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <nav th:if="${totalPages > 1}" class="mb-4">
+            <ul class="pagination justify-content-center">
+              <li th:classappend="${page == 0} ? 'disabled'" class="page-item">
+                <a
+                  class="page-link"
+                  th:href="@{|/loans?page=${page-1}&size=${size}&q=${q}&status=${status}|}"
+                  >&laquo;</a
+                >
+              </li>
+              <li
+                class="page-item"
+                th:each="i : ${#numbers.sequence(0, totalPages-1)}"
+                th:classappend="${i == page} ? 'active'"
+              >
+                <a
+                  class="page-link"
+                  th:text="${i+1}"
+                  th:href="@{|/loans?page=${i}&size=${size}&q=${q}&status=${status}|}"
+                  >1</a
+                >
+              </li>
+              <li
+                th:classappend="${page >= totalPages-1} ? 'disabled'"
+                class="page-item"
+              >
+                <a
+                  class="page-link"
+                  th:href="@{|/loans?page=${page+1}&size=${size}&q=${q}&status=${status}|}"
+                  >&raquo;</a
+                >
+              </li>
+            </ul>
+          </nav>
+
+          <!-- Quick Borrow -->
+          <div class="card shadow-sm mt-5">
+            <div class="card-body">
+              <h5 class="card-title mb-3">Quick Borrow</h5>
+              <form
+                class="row g-3"
+                method="post"
+                action="/api/loans/borrow"
+                onsubmit="return confirm('Borrow this book?')"
+              >
+                <div class="col-md-3">
+                  <input
+                    class="form-control"
+                    name="bookId"
+                    placeholder="Book ID"
+                    required
+                  />
                 </div>
                 <div class="col-md-3">
-                    <select class="form-select" name="status" th:value="${status}">
-                        <option value="">All status</option>
-                        <option value="BORROWED">BORROWED</option>
-                        <option value="OVERDUE">OVERDUE</option>
-                        <option value="RETURNED">RETURNED</option>
-                    </select>
+                  <input
+                    class="form-control"
+                    name="memberId"
+                    placeholder="Member ID"
+                    required
+                  />
+                </div>
+                <div class="col-md-3">
+                  <input
+                    class="form-control"
+                    name="days"
+                    value="14"
+                    placeholder="Days"
+                    type="number"
+                    min="1"
+                    required
+                  />
                 </div>
                 <div class="col-md-3 d-grid">
-                    <button class="btn btn-primary">Filter</button>
+                  <button class="btn btn-primary">Borrow</button>
                 </div>
-            </form>
-
-            <!-- Loans Table -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-body p-0">
-                    <table class="table table-hover mb-0 align-middle">
-                        <thead class="table-light">
-                        <tr>
-                            <th>ID</th>
-                            <th>Book</th>
-                            <th>Member</th>
-                            <th>Borrowed</th>
-                            <th>Due</th>
-                            <th>Returned</th>
-                            <th>Status</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="l : ${loans}">
-                            <td th:text="${l.id}">1</td>
-                            <td th:text="${l.bookTitle}">Clean Code</td>
-                            <td>
-                                <span th:text="${l.memberCode}">M001</span> -
-                                <span th:text="${l.memberName}">Nguyen Hung</span>
-                            </td>
-                            <td th:text="${l.borrowedAt}">2025-01-01</td>
-                            <td th:text="${l.dueAt}">2025-01-08</td>
-                            <td th:text="${l.returnedAt != null ? l.returnedAt : '-'}">-</td>
-                            <td>
-                                <span th:text="${l.status}" th:class="'status-' + ${l.status}" class="d-inline-block mb-1"></span>
-                                <br th:if="${l.returnedAt == null}">
-                                <form th:if="${l.returnedAt == null}" th:action="@{|/api/loans/${l.id}/return|}" method="post" class="d-inline">
-                                    <button class="btn btn-sm btn-outline-success mt-1">Return</button>
-                                </form>
-                            </td>
-
-                        </tr>
-                        <tr th:if="${#lists.isEmpty(loans)}">
-                            <td colspan="7" class="text-center text-muted py-3">No loans found</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+              </form>
             </div>
-
-            <!-- Pagination -->
-            <nav th:if="${totalPages > 1}" class="mb-4">
-                <ul class="pagination justify-content-center">
-                    <li th:classappend="${page == 0} ? 'disabled'" class="page-item">
-                        <a class="page-link" th:href="@{|/loans?page=${page-1}&size=${size}&q=${q}&status=${status}|}">&laquo;</a>
-                    </li>
-                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages-1)}"
-                        th:classappend="${i == page} ? 'active'">
-                        <a class="page-link" th:text="${i+1}" th:href="@{|/loans?page=${i}&size=${size}&q=${q}&status=${status}|}">1</a>
-                    </li>
-                    <li th:classappend="${page >= totalPages-1} ? 'disabled'" class="page-item">
-                        <a class="page-link" th:href="@{|/loans?page=${page+1}&size=${size}&q=${q}&status=${status}|}">&raquo;</a>
-                    </li>
-                </ul>
-            </nav>
-
-            <!-- Quick Borrow -->
-            <div class="card shadow-sm mt-5">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Quick Borrow</h5>
-                    <form class="row g-3" method="post" action="/api/loans/borrow"
-                          onsubmit="return confirm('Borrow this book?')">
-                        <div class="col-md-3">
-                            <input class="form-control" name="bookId" placeholder="Book ID" required>
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" name="memberId" placeholder="Member ID" required>
-                        </div>
-                        <div class="col-md-3">
-                            <input class="form-control" name="days" value="14" placeholder="Days" type="number" min="1" required>
-                        </div>
-                        <div class="col-md-3 d-grid">
-                            <button class="btn btn-primary">Borrow</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
+          </div>
         </div>
+      </div>
     </div>
-</div>
 
-<script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-</body>
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>

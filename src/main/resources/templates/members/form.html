@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${mode == 'create' ? 'Create Member' : 'Edit Member'}">Member Form</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="bg-light">
+<div class="container py-4">
+    <a class="btn btn-link" href="/members">&larr; Back</a>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h1 class="h4 mb-3" th:text="${mode == 'create' ? 'Create Member' : 'Edit Member'}">Member</h1>
+            <form th:action="${mode == 'create' ? '/members' : '/members/' + member.id}"
+                  th:object="${member}"
+                  method="post">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Code</label>
+                        <input type="text" class="form-control" th:field="*{code}" th:readonly="${mode == 'edit'}">
+                        <div class="text-danger" th:errors="*{code}"></div>
+                        <div class="form-text">M001, M002,...</div>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" th:field="*{name}">
+                        <div class="text-danger" th:errors="*{name}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" th:field="*{email}">
+                        <div class="text-danger" th:errors="*{email}"></div>
+                    </div>
+                </div>
+                <div class="mt-4 d-flex gap-2">
+                    <button class="btn btn-primary" type="submit" th:text="${mode == 'create' ? 'Create' : 'Save'}">Save</button>
+                    <a class="btn btn-outline-secondary" href="/members">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
