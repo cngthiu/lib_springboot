@@ -5,7 +5,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api/loans")
@@ -36,5 +38,15 @@ public class LoanRestController {
     @PostMapping("/{loanId}/return")
     public LoanView returnLoan(@PathVariable long loanId) {
         return service.returnLoan(loanId);
+    }
+    /**
+     * Xử lý các lỗi nghiệp vụ
+     * Bắt các lỗi IllegalStateException và IllegalArgumentException từ LoanService
+     */
+    @ExceptionHandler({IllegalStateException.class, IllegalArgumentException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleBusinessException(Exception ex) {
+        // Trả về lỗi 400 với thông báo lỗi rõ ràng cho client
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

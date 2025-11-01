@@ -76,6 +76,16 @@ public class Member extends TableImpl<MemberRecord> {
      */
     public final TableField<MemberRecord, String> EMAIL = createField(DSL.name("EMAIL"), SQLDataType.NVARCHAR(255), this, "");
 
+    /**
+     * The column <code>dbo.MEMBER.STATUS</code>.
+     */
+    public final TableField<MemberRecord, String> STATUS = createField(DSL.name("STATUS"), SQLDataType.NVARCHAR(20).nullable(false).defaultValue(DSL.field(DSL.raw("N'(''ACTIVE'')'"), SQLDataType.NVARCHAR)), this, "");
+
+    /**
+     * The column <code>dbo.MEMBER.MAX_LOAN_LIMIT</code>.
+     */
+    public final TableField<MemberRecord, Integer> MAX_LOAN_LIMIT = createField(DSL.name("MAX_LOAN_LIMIT"), SQLDataType.INTEGER.nullable(false).defaultValue(DSL.field(DSL.raw("null"), SQLDataType.INTEGER)), this, "");
+
     private Member(Name alias, Table<MemberRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }

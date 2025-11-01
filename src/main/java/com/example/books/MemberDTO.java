@@ -19,6 +19,13 @@ public class MemberDTO {
     @Size(max = 255, message = "Email must be at most 255 characters")
     private String email;
 
+    @NotBlank(message = "Status is required")
+    private String status = "ACTIVE";
+
+    @NotNull(message = "Loan limit is required")
+    @Min(value = 1, message = "Loan limit must be at least 1")
+    private Integer maxLoanLimit = 5;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getCode() { return code; }
@@ -27,4 +34,8 @@ public class MemberDTO {
     public void setName(String name) { this.name = name; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public Integer getMaxLoanLimit() { return maxLoanLimit; }
+    public void setMaxLoanLimit(Integer maxLoanLimit) { this.maxLoanLimit = maxLoanLimit; }
 }

@@ -13,19 +13,23 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.jooq.tables.Book.BOOK;
 import static com.example.jooq.tables.Loan.LOAN;
 import static com.example.jooq.tables.Member.MEMBER;
+import static com.example.jooq.tables.Reservation.RESERVATION;
 
 @Service
 @Transactional
 public class LoanService {
 
     private final DSLContext dsl;
+        private final NotificationService notificationService;
 
     public LoanService(DSLContext dsl) {
         this.dsl = dsl;
+        this.notificationService = notificationService;
     }
 
     public Page<LoanView> list(String q, String status, Pageable pageable) {
@@ -96,7 +100,20 @@ public class LoanService {
         return new PageImpl<>(content, pageable, total);
     }
 
-    public LoanView borrow(long bookId, long memberId, int days) {
+public LoanView borrow(long bookId, long memberId, int days) {
+        // 1. Kiểm tra thành viên
+        Record member = validateMember(memberId);
+
+        // 2. Kiểm tra sách
+        Record book = validateBook(bookId);
+
+        // 3. Giảm số lượng sách
+        dsl.update(BOOK)
+                .set(BOOK.AVAILABLE_COPIES, BOOK.AVAILABLE_COPIES.minus(1))
+                .where(BOOK.ID.eq(bookId))
+                .execute();
+
+        // 4. Tạo khoản mượn
         OffsetDateTime now = OffsetDateTime.now(ZoneId.systemDefault());
         OffsetDateTime due = now.plusDays(Math.max(days, 1));
         LocalDateTime nowLdt = now.toLocalDateTime();
@@ -108,22 +125,115 @@ public class LoanService {
 
         Long newId = dsl.fetchOne(insertSql, bookId, memberId, nowLdt, dueLdt).get(0, Long.class);
 
-        String title = dsl.fetchOne("SELECT TITLE FROM dbo.BOOK WHERE ID = ?", bookId)
-                .getValue("TITLE", String.class);
-
-        Record2<String, String> m = dsl.select(MEMBER.CODE, MEMBER.NAME)
+        // Trả về LoanView
+        return new LoanView(newId,
+                book.get(BOOK.TITLE),
+                member.get(MEMBER.CODE),
+                member.get(MEMBER.NAME),
+                nowLdt, dueLdt, null, "BORROWED"
+        );
+    }
+    /**
+     * Helper kiểm tra điều kiện thành viên
+     */
+    private Record validateMember(long memberId) {
+        Record member = dsl.select(MEMBER.CODE, MEMBER.NAME, MEMBER.STATUS, MEMBER.MAX_LOAN_LIMIT)
                 .from(MEMBER)
                 .where(MEMBER.ID.eq(memberId))
                 .fetchOne();
 
-        return new LoanView(newId, title, m.value1(), m.value2(), nowLdt, dueLdt, null, "BORROWED");
-    }
+        if (member == null) {
+            throw new IllegalArgumentException("Member not found");
+        }
+        
+        if (!"ACTIVE".equals(member.get(MEMBER.STATUS))) {
+            throw new IllegalStateException("Member account is " + member.get(MEMBER.STATUS));
+        }
 
+        Integer currentLoans = dsl.selectCount()
+                .from(LOAN)
+                .where(LOAN.MEMBER_ID.eq(memberId)
+                        .and(LOAN.STATUS.in("BORROWED", "OVERDUE")))
+                .fetchOne(0, Integer.class);
+        
+        if (currentLoans >= member.get(MEMBER.MAX_LOAN_LIMIT)) {
+            throw new IllegalStateException("Member has reached loan limit of " + member.get(MEMBER.MAX_LOAN_LIMIT));
+        }
+        
+        return member;
+    }
+    /**
+     * Helper kiểm tra điều kiện sách
+     */
+    private Record validateBook(long bookId) {
+        Record book = dsl.select(BOOK.TITLE, BOOK.AVAILABLE_COPIES)
+                .from(BOOK)
+                .where(BOOK.ID.eq(bookId))
+                .fetchOne();
+
+        if (book == null) {
+            throw new IllegalArgumentException("Book not found");
+        }
+
+        if (book.get(BOOK.AVAILABLE_COPIES) <= 0) {
+            throw new IllegalStateException("Book is currently unavailable. Please place a reservation.");
+        }
+        return book;
+    }
+        /**
+     * Cập nhật hàm trả sách để xử lý TỒN KHO và HÀNG CHỜ
+     */
     public LoanView returnLoan(long loanId) {
         OffsetDateTime now = OffsetDateTime.now(ZoneId.systemDefault());
 
+        // 1. Cập nhật trạng thái mượn
+        // Lấy BOOK_ID TRƯỚC KHI CẬP NHẬT
+        Long bookId = dsl.select(LOAN.BOOK_ID)
+                .from(LOAN)
+                .where(LOAN.ID.eq(loanId))
+                .fetchOne(LOAN.BOOK_ID);
+                
+        if (bookId == null) {
+             throw new IllegalArgumentException("Loan not found");
+        }
+
         dsl.execute("UPDATE dbo.LOAN SET RETURNED_AT = ?, STATUS = 'RETURNED' WHERE ID = ?", now, loanId);
 
+        // 2. Xử lý logic tồn kho và hàng chờ (RESERVATION)
+        Optional<Record> nextInQueue = dsl.select(RESERVATION.ID, RESERVATION.MEMBER_ID)
+                .from(RESERVATION)
+                .where(RESERVATION.BOOK_ID.eq(bookId)
+                        .and(RESERVATION.STATUS.eq("PENDING")))
+                .orderBy(RESERVATION.REQUESTED_AT.asc())
+                .limit(1)
+                .fetchOptional();
+        
+        if (nextInQueue.isPresent()) {
+            // Có người chờ -> Gán sách cho họ
+            Record reservation = nextInQueue.get();
+            long reservationId = reservation.get(RESERVATION.ID);
+            long memberIdToNotify = reservation.get(RESERVATION.MEMBER_ID);
+
+            // Cập nhật trạng thái đặt chỗ
+            dsl.update(RESERVATION)
+                    .set(RESERVATION.STATUS, "FULFILLED")
+                    // Có thể set thêm ngày hết hạn lấy sách
+                    .where(RESERVATION.ID.eq(reservationId))
+                    .execute();
+            
+            // Gửi thông báo (Sách không quay lại kho AVAILABLE)
+            // Giả định bạn có hàm này trong NotificationService
+            // notificationService.createReservationAvailableNotification(bookId, memberIdToNotify);
+            
+        } else {
+            // Không có ai chờ -> Tăng số lượng sách sẵn có
+            dsl.update(BOOK)
+                    .set(BOOK.AVAILABLE_COPIES, BOOK.AVAILABLE_COPIES.plus(1))
+                    .where(BOOK.ID.eq(bookId))
+                    .execute();
+        }
+
+        // 3. Lấy thông tin chi tiết để trả về (logic cũ)
         org.jooq.Record r = dsl.fetchOne(
                 "SELECT L.ID, B.TITLE, M.CODE, M.NAME, " +
                         "L.BORROWED_AT, L.DUE_AT, L.RETURNED_AT, L.STATUS " +
@@ -133,7 +243,7 @@ public class LoanService {
                         "WHERE L.ID = ?", loanId
         );
 
-        if (r == null) throw new IllegalArgumentException("Loan not found");
+        if (r == null) throw new IllegalArgumentException("Loan not found after update");
 
         return new LoanView(
                 r.getValue("ID", Long.class),

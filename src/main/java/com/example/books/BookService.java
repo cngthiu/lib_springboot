@@ -12,6 +12,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.SortOrder;
+
+import static com.example.jooq.tables.Book.BOOK; // Import tĩnh
+
 @Service
 @Transactional
 public class BookService {
@@ -52,10 +56,11 @@ public class BookService {
         String orderDir = (order == SortOrder.ASC) ? "ASC" : "DESC";
 
         // Query với OFFSET/FETCH (SQL Server syntax)
-        String sql = "SELECT ID, TITLE, AUTHOR, PRICE, PUBLISHED_DATE, ISBN " +
+        String sql = "SELECT ID, TITLE, AUTHOR, PRICE, PUBLISHED_DATE, ISBN, " +
+                "TOTAL_COPIES, AVAILABLE_COPIES " +
                 "FROM dbo.BOOK " +
                 "WHERE " + whereClause + " " +
-                "ORDER BY TITLE " + orderDir + " " +
+                "ORDER BY " + sortField.getName() + " " + orderDir + " " + 
                 "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
         queryParams.add(offset);
@@ -71,6 +76,8 @@ public class BookService {
                     b.setPrice(r.get("PRICE", BigDecimal.class));
                     b.setPublishedDate(r.get("PUBLISHED_DATE", LocalDate.class));
                     b.setIsbn(r.get("ISBN", String.class));
+                    b.setTotalCopies(r.get("TOTAL_COPIES", Integer.class));
+                    b.setAvailableCopies(r.get("AVAILABLE_COPIES", Integer.class));
                     return b;
                 })
                 .toList();
@@ -80,6 +87,7 @@ public class BookService {
 
     public BookDTO findById(Long id) {
         String sql = "SELECT ID, TITLE, AUTHOR, PRICE, PUBLISHED_DATE, ISBN " +
+                "TOTAL_COPIES, AVAILABLE_COPIES " +
                 "FROM dbo.BOOK WHERE ID = ?";
 
         org.jooq.Record record = dsl.fetchOne(sql, id);
@@ -94,14 +102,16 @@ public class BookService {
         b.setPrice(record.get("PRICE", BigDecimal.class));
         b.setPublishedDate(record.get("PUBLISHED_DATE", LocalDate.class));
         b.setIsbn(record.get("ISBN", String.class));
+        b.setTotalCopies(record.get("TOTAL_COPIES", Integer.class));
+        b.setAvailableCopies(record.get("AVAILABLE_COPIES", Integer.class));
         return b;
     }
 
     public BookDTO save(BookDTO b) {
         if (b.getId() == null) {
             // INSERT
-            String sql = "INSERT INTO dbo.BOOK (TITLE, AUTHOR, PRICE, PUBLISHED_DATE, ISBN) " +
-                    "VALUES (?, ?, ?, ?, ?); " +
+            String sql = "INSERT INTO dbo.BOOK (TITLE, AUTHOR, PRICE, PUBLISHED_DATE, ISBN, TOTAL_COPIES, AVAILABLE_COPIES) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?); " + 
                     "SELECT CAST(SCOPE_IDENTITY() AS BIGINT) AS ID";
 
             Long newId = dsl.fetchOne(sql,
@@ -109,14 +119,17 @@ public class BookService {
                             b.getAuthor(),
                             b.getPrice(),
                             b.getPublishedDate(),
-                            b.getIsbn())
+                            b.getIsbn(),
+                            b.getTotalCopies(),    
+                            b.getAvailableCopies())
                     .get(0, Long.class);  // Lấy cột index 0
 
             b.setId(newId);
         } else {
             // UPDATE
             String sql = "UPDATE dbo.BOOK " +
-                    "SET TITLE = ?, AUTHOR = ?, PRICE = ?, PUBLISHED_DATE = ?, ISBN = ? " +
+                    "SET TITLE = ?, AUTHOR = ?, PRICE = ?, PUBLISHED_DATE = ?, ISBN = ?, " +
+                    "TOTAL_COPIES = ?, AVAILABLE_COPIES = ? " +
                     "WHERE ID = ?";
 
             dsl.execute(sql,
@@ -125,6 +138,8 @@ public class BookService {
                     b.getPrice(),
                     b.getPublishedDate(),
                     b.getIsbn(),
+                    b.getTotalCopies(),    
+                    b.getAvailableCopies(),
                     b.getId());
         }
         return b;

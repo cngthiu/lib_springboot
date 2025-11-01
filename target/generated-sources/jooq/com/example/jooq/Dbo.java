@@ -9,6 +9,7 @@ import com.example.jooq.tables.Loan;
 import com.example.jooq.tables.Member;
 import com.example.jooq.tables.Notification;
 import com.example.jooq.tables.NotificationHistory;
+import com.example.jooq.tables.Reservation;
 
 import java.util.Arrays;
 import java.util.List;
@@ -57,6 +58,11 @@ public class Dbo extends SchemaImpl {
     public final NotificationHistory NOTIFICATION_HISTORY = NotificationHistory.NOTIFICATION_HISTORY;
 
     /**
+     * The table <code>dbo.RESERVATION</code>.
+     */
+    public final Reservation RESERVATION = Reservation.RESERVATION;
+
+    /**
      * No further instances allowed
      */
     private Dbo() {
@@ -76,7 +82,8 @@ public class Dbo extends SchemaImpl {
             Loan.LOAN,
             Member.MEMBER,
             Notification.NOTIFICATION,
-            NotificationHistory.NOTIFICATION_HISTORY
+            NotificationHistory.NOTIFICATION_HISTORY,
+            Reservation.RESERVATION
         );
     }
 }

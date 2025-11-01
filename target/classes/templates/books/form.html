@@ -42,6 +42,16 @@
                         <input type="text" class="form-control" th:field="*{isbn}" placeholder="e.g., 978-0132350884">
                         <div class="text-danger" th:errors="*{isbn}"></div>
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Total Copies</label>
+                        <input type="number" class="form-control" th:field="*{totalCopies}">
+                        <div class="text-danger" th:errors="*{totalCopies}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Available Copies</label>
+                        <input type="number" class="form-control" th:field="*{availableCopies}">
+                        <div class="text-danger" th:errors="*{availableCopies}"></div>
+                    </div>
                 </div>
                 <div class="mt-4 d-flex gap-2">
                     <button class="btn btn-primary" type="submit" th:text="${mode == 'create' ? 'Create' : 'Save'}">Save</button>

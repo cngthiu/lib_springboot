@@ -32,6 +32,19 @@
                         <input type="email" class="form-control" th:field="*{email}">
                         <div class="text-danger" th:errors="*{email}"></div>
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" th:field="*{status}">
+                            <option value="ACTIVE">ACTIVE</option>
+                            <option value="SUSPENDED">SUSPENDED</option>
+                        </select>
+                        <div class="text-danger" th:errors="*{status}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Max Loan Limit</label>
+                        <input type="number" class="form-control" th:field="*{maxLoanLimit}">
+                        <div class="text-danger" th:errors="*{maxLoanLimit}"></div>
+                    </div>
                 </div>
                 <div class="mt-4 d-flex gap-2">
                     <button class="btn btn-primary" type="submit" th:text="${mode == 'create' ? 'Create' : 'Save'}">Save</button>

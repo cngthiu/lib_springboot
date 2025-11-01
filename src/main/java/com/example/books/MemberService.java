@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import static com.example.jooq.tables.Member.MEMBER; // Import tĩnh
 
 @Service
 @Transactional
@@ -30,11 +31,9 @@ public class MemberService {
         if (q != null && !q.isBlank()) {
             String like = "%" + q.trim() + "%";
             whereClause.append(" AND (NAME LIKE ? OR CODE LIKE ? OR EMAIL LIKE ?)");
-            // Params cho COUNT query
             countParams.add(like);
             countParams.add(like);
             countParams.add(like);
-            // Params cho SELECT query
             queryParams.add(like);
             queryParams.add(like);
             queryParams.add(like);
@@ -49,11 +48,11 @@ public class MemberService {
         int offset = (int) pageable.getOffset();
         int pageSize = pageable.getPageSize();
 
-        // Query với OFFSET/FETCH (SQL Server syntax)
-        String sql = "SELECT ID, CODE, NAME, EMAIL " +
+        // SELECT có thêm STATUS và MAX_LOAN_LIMIT
+        String sql = "SELECT ID, CODE, NAME, EMAIL, STATUS, MAX_LOAN_LIMIT " +
                 "FROM dbo.MEMBER " +
                 "WHERE " + whereClause + " " +
-                "ORDER BY ID DESC " + // Simple sort by ID for simplicity
+                "ORDER BY ID DESC " +
                 "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
         queryParams.add(offset);
@@ -67,6 +66,8 @@ public class MemberService {
                     m.setCode(r.get("CODE", String.class));
                     m.setName(r.get("NAME", String.class));
                     m.setEmail(r.get("EMAIL", String.class));
+                    m.setStatus(r.get("STATUS", String.class));
+                    m.setMaxLoanLimit(r.get("MAX_LOAN_LIMIT", Integer.class));
                     return m;
                 })
                 .toList();
@@ -75,11 +76,10 @@ public class MemberService {
     }
 
     public MemberDTO findById(Long id) {
-        String sql = "SELECT ID, CODE, NAME, EMAIL " +
+        String sql = "SELECT ID, CODE, NAME, EMAIL, STATUS, MAX_LOAN_LIMIT " +
                 "FROM dbo.MEMBER WHERE ID = ?";
 
-        org.jooq.Record record = dsl.fetchOne(sql, id);
-
+        var record = dsl.fetchOne(sql, id);
         if (record == null)
             throw new IllegalArgumentException("Member not found");
 
@@ -88,33 +88,39 @@ public class MemberService {
         m.setCode(record.get("CODE", String.class));
         m.setName(record.get("NAME", String.class));
         m.setEmail(record.get("EMAIL", String.class));
+        m.setStatus(record.get("STATUS", String.class));
+        m.setMaxLoanLimit(record.get("MAX_LOAN_LIMIT", Integer.class));
         return m;
     }
 
     public MemberDTO save(MemberDTO m) {
         if (m.getId() == null) {
             // INSERT
-            String sql = "INSERT INTO dbo.MEMBER (CODE, NAME, EMAIL) " +
-                    "VALUES (?, ?, ?); " +
+            String sql = "INSERT INTO dbo.MEMBER (CODE, NAME, EMAIL, STATUS, MAX_LOAN_LIMIT) " +
+                    "VALUES (?, ?, ?, ?, ?); " +
                     "SELECT CAST(SCOPE_IDENTITY() AS BIGINT) AS ID";
 
             Long newId = dsl.fetchOne(sql,
                             m.getCode(),
                             m.getName(),
-                            m.getEmail())
+                            m.getEmail(),
+                            m.getStatus(),
+                            m.getMaxLoanLimit())
                     .get(0, Long.class);
 
             m.setId(newId);
         } else {
             // UPDATE
             String sql = "UPDATE dbo.MEMBER " +
-                    "SET CODE = ?, NAME = ?, EMAIL = ? " +
+                    "SET CODE = ?, NAME = ?, EMAIL = ?, STATUS = ?, MAX_LOAN_LIMIT = ? " +
                     "WHERE ID = ?";
 
             dsl.execute(sql,
                     m.getCode(),
                     m.getName(),
                     m.getEmail(),
+                    m.getStatus(),
+                    m.getMaxLoanLimit(),
                     m.getId());
         }
         return m;
