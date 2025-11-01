@@ -9,6 +9,7 @@ import com.example.jooq.tables.Loan;
 import com.example.jooq.tables.Member;
 import com.example.jooq.tables.Notification;
 import com.example.jooq.tables.NotificationHistory;
+import com.example.jooq.tables.Reservation;
 
 
 /**
@@ -41,4 +42,9 @@ public class Tables {
      * The table <code>dbo.NOTIFICATION_HISTORY</code>.
      */
     public static final NotificationHistory NOTIFICATION_HISTORY = NotificationHistory.NOTIFICATION_HISTORY;
+
+    /**
+     * The table <code>dbo.RESERVATION</code>.
+     */
+    public static final Reservation RESERVATION = Reservation.RESERVATION;
 }

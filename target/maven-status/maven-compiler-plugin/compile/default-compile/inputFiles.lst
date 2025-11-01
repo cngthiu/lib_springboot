@@ -22,8 +22,10 @@
 /media/congthieu/ubuntu_data/advance_java/target/generated-sources/jooq/com/example/jooq/tables/Member.java
 /media/congthieu/ubuntu_data/advance_java/target/generated-sources/jooq/com/example/jooq/tables/Notification.java
 /media/congthieu/ubuntu_data/advance_java/target/generated-sources/jooq/com/example/jooq/tables/NotificationHistory.java
+/media/congthieu/ubuntu_data/advance_java/target/generated-sources/jooq/com/example/jooq/tables/Reservation.java
 /media/congthieu/ubuntu_data/advance_java/target/generated-sources/jooq/com/example/jooq/tables/records/BookRecord.java
 /media/congthieu/ubuntu_data/advance_java/target/generated-sources/jooq/com/example/jooq/tables/records/LoanRecord.java
 /media/congthieu/ubuntu_data/advance_java/target/generated-sources/jooq/com/example/jooq/tables/records/MemberRecord.java
 /media/congthieu/ubuntu_data/advance_java/target/generated-sources/jooq/com/example/jooq/tables/records/NotificationHistoryRecord.java
 /media/congthieu/ubuntu_data/advance_java/target/generated-sources/jooq/com/example/jooq/tables/records/NotificationRecord.java
+/media/congthieu/ubuntu_data/advance_java/target/generated-sources/jooq/com/example/jooq/tables/records/ReservationRecord.java

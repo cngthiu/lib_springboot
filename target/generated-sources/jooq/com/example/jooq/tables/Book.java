@@ -88,6 +88,16 @@ public class Book extends TableImpl<BookRecord> {
      */
     public final TableField<BookRecord, String> ISBN = createField(DSL.name("ISBN"), SQLDataType.NVARCHAR(32), this, "");
 
+    /**
+     * The column <code>dbo.BOOK.TOTAL_COPIES</code>.
+     */
+    public final TableField<BookRecord, Integer> TOTAL_COPIES = createField(DSL.name("TOTAL_COPIES"), SQLDataType.INTEGER.nullable(false).defaultValue(DSL.field(DSL.raw("null"), SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>dbo.BOOK.AVAILABLE_COPIES</code>.
+     */
+    public final TableField<BookRecord, Integer> AVAILABLE_COPIES = createField(DSL.name("AVAILABLE_COPIES"), SQLDataType.INTEGER.nullable(false).defaultValue(DSL.field(DSL.raw("null"), SQLDataType.INTEGER)), this, "");
+
     private Book(Name alias, Table<BookRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }

@@ -117,6 +117,34 @@ public class BookRecord extends UpdatableRecordImpl<BookRecord> {
         return (String) get(5);
     }
 
+    /**
+     * Setter for <code>dbo.BOOK.TOTAL_COPIES</code>.
+     */
+    public void setTotalCopies(Integer value) {
+        set(6, value);
+    }
+
+    /**
+     * Getter for <code>dbo.BOOK.TOTAL_COPIES</code>.
+     */
+    public Integer getTotalCopies() {
+        return (Integer) get(6);
+    }
+
+    /**
+     * Setter for <code>dbo.BOOK.AVAILABLE_COPIES</code>.
+     */
+    public void setAvailableCopies(Integer value) {
+        set(7, value);
+    }
+
+    /**
+     * Getter for <code>dbo.BOOK.AVAILABLE_COPIES</code>.
+     */
+    public Integer getAvailableCopies() {
+        return (Integer) get(7);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -140,7 +168,7 @@ public class BookRecord extends UpdatableRecordImpl<BookRecord> {
     /**
      * Create a detached, initialised BookRecord
      */
-    public BookRecord(Object id, String title, String author, BigDecimal price, LocalDate publishedDate, String isbn) {
+    public BookRecord(Object id, String title, String author, BigDecimal price, LocalDate publishedDate, String isbn, Integer totalCopies, Integer availableCopies) {
         super(Book.BOOK);
 
         setId(id);
@@ -149,6 +177,8 @@ public class BookRecord extends UpdatableRecordImpl<BookRecord> {
         setPrice(price);
         setPublishedDate(publishedDate);
         setIsbn(isbn);
+        setTotalCopies(totalCopies);
+        setAvailableCopies(availableCopies);
         resetChangedOnNotNull();
     }
 }

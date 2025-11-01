@@ -86,6 +86,34 @@ public class MemberRecord extends UpdatableRecordImpl<MemberRecord> {
         return (String) get(3);
     }
 
+    /**
+     * Setter for <code>dbo.MEMBER.STATUS</code>.
+     */
+    public void setStatus(String value) {
+        set(4, value);
+    }
+
+    /**
+     * Getter for <code>dbo.MEMBER.STATUS</code>.
+     */
+    public String getStatus() {
+        return (String) get(4);
+    }
+
+    /**
+     * Setter for <code>dbo.MEMBER.MAX_LOAN_LIMIT</code>.
+     */
+    public void setMaxLoanLimit(Integer value) {
+        set(5, value);
+    }
+
+    /**
+     * Getter for <code>dbo.MEMBER.MAX_LOAN_LIMIT</code>.
+     */
+    public Integer getMaxLoanLimit() {
+        return (Integer) get(5);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -109,13 +137,15 @@ public class MemberRecord extends UpdatableRecordImpl<MemberRecord> {
     /**
      * Create a detached, initialised MemberRecord
      */
-    public MemberRecord(Object id, String code, String name, String email) {
+    public MemberRecord(Object id, String code, String name, String email, String status, Integer maxLoanLimit) {
         super(Member.MEMBER);
 
         setId(id);
         setCode(code);
         setName(name);
         setEmail(email);
+        setStatus(status);
+        setMaxLoanLimit(maxLoanLimit);
         resetChangedOnNotNull();
     }
 }

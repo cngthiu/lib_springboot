@@ -9,11 +9,13 @@ import com.example.jooq.tables.Loan;
 import com.example.jooq.tables.Member;
 import com.example.jooq.tables.Notification;
 import com.example.jooq.tables.NotificationHistory;
+import com.example.jooq.tables.Reservation;
 import com.example.jooq.tables.records.BookRecord;
 import com.example.jooq.tables.records.LoanRecord;
 import com.example.jooq.tables.records.MemberRecord;
 import com.example.jooq.tables.records.NotificationHistoryRecord;
 import com.example.jooq.tables.records.NotificationRecord;
+import com.example.jooq.tables.records.ReservationRecord;
 
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
@@ -36,4 +38,5 @@ public class Keys {
     public static final UniqueKey<MemberRecord> PK_MEMBER = Internal.createUniqueKey(Member.MEMBER, DSL.name("PK_MEMBER"), new TableField[] { Member.MEMBER.ID }, true);
     public static final UniqueKey<NotificationRecord> PK_NOTIFICATION = Internal.createUniqueKey(Notification.NOTIFICATION, DSL.name("PK_NOTIFICATION"), new TableField[] { Notification.NOTIFICATION.ID }, true);
     public static final UniqueKey<NotificationHistoryRecord> PK_NOTIFICATION_HISTORY = Internal.createUniqueKey(NotificationHistory.NOTIFICATION_HISTORY, DSL.name("PK_NOTIFICATION_HISTORY"), new TableField[] { NotificationHistory.NOTIFICATION_HISTORY.ID }, true);
+    public static final UniqueKey<ReservationRecord> PK_RESERVATION = Internal.createUniqueKey(Reservation.RESERVATION, DSL.name("PK_RESERVATION"), new TableField[] { Reservation.RESERVATION.ID }, true);
 }
